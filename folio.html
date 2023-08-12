@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unir y Sellar PDF</title>
+    <style>
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+            width: 1500px; /* Ancho ajustado */
+            height: 90px; /* Altura ajustada */
+            border: 2px solid #ccc; /* Añadir borde */
+            border-radius: 5px; /* Añadir bordes redondeados */
+            padding: 4px; /* Espacio interno del borde */
+        }
+
+        button {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px 20px; /* Ajusta el espaciado interno del botón */
+            font-size: 16px; /* Tamaño de fuente del botón */
+            border: 2px solid #007bff; /* Añadir borde */
+            border-radius: 5px; /* Añadir bordes redondeados */
+            background-color: #007bff; /* Color de fondo del botón */
+            color: white; /* Color del texto */
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.worker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/2.14.0/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+
+<div id="container">
+    <h2>Unir y Sellar PDFs</h2>
+    <p>Seleccione uno o dos archivos PDF:</p>
+    <input type="file" id="pdf1" accept="application/pdf">
+    <input type="file" id="pdf2" accept="application/pdf">
+    <button onclick="unirYAplicarSello()">Unir y Sellar PDFs</button>
+    <a id="descargar" href="#" download hidden>Descargar PDF</a>
+</div>
+
+<div id="container2">
+    <h2>Unir PDFs</h2>
+    <p>Seleccione dos archivos PDF:</p>
+    <input type="file" id="pdf3" accept="application/pdf">
+    <input type="file" id="pdf4" accept="application/pdf">
+    <button onclick="unirPDFs()">Unir PDFs</button>
+    <a id="descargar2" href="#" download hidden>Descargar PDF</a>
+</div>
+
+<script>
+    async function unirYAplicarSello() {
+        var pdf1 = document.getElementById("pdf1").files[0];
+        var pdf2 = document.getElementById("pdf2").files[0];
+        
+        if (pdf1 && pdf2) {
+            var pdfData1 = new Uint8Array(await pdf1.arrayBuffer());
+            var pdfData2 = new Uint8Array(await pdf2.arrayBuffer());
+            const pdfDoc1 = await PDFLib.PDFDocument.load(pdfData1);
+            const pdfDoc2 = await PDFLib.PDFDocument.load(pdfData2);
+            const mergedPdf = await PDFLib.PDFDocument.create();
+            const pagesPdf1 = await mergedPdf.copyPages(pdfDoc1, pdfDoc1.getPageIndices());
+            pagesPdf1.forEach((page) => mergedPdf.addPage(page));
+            const pagesPdf2 = await mergedPdf.copyPages(pdfDoc2, pdfDoc2.getPageIndices());
+            pagesPdf2.forEach((page) => mergedPdf.addPage(page));
+
+            // Aquí aplicamos el sello
+            const [page] = mergedPdf.getPages();
+            const randomNumber1 = generateRandomNumber(10, 99);
+            const randomNumber2 = generateRandomNumber(1000000, 9999999);
+            const fixedText = 'FOLIO';
+            const variableText = `A${randomNumber1} ${randomNumber2}`;
+            const font = await mergedPdf.embedFont(PDFLib.StandardFonts.Helvetica);
+
+            const topY = page.getHeight() - 50;
+
+            page.drawText(fixedText, {
+                x: 85,
+                y: topY,
+                size: 10,
+                font: await mergedPdf.embedFont(PDFLib.StandardFonts.HelveticaBold),
+                color: PDFLib.rgb(0, 0, 0),
+            });
+
+            page.drawText(variableText, {
+                x: 70,
+                y: topY - 10,
+                size: 10,
+                font: await mergedPdf.embedFont(PDFLib.StandardFonts.HelveticaBold),
+                color: PDFLib.rgb(0, 0, 0),
+            });
+
+            const barcodeText = `A${randomNumber1}${randomNumber2}`;
+            const barcodeCanvas = document.createElement('canvas');
+            JsBarcode(barcodeCanvas, barcodeText, {
+                format: 'CODE128',
+                displayValue: false,
+                height: 25,
+                background: 'transparent',
+                lineColor: 'black',
+                dpi: 300,
+            });
+
+            const barcodeImage = await mergedPdf.embedPng(barcodeCanvas.toDataURL('image/png'));
+            const [barcodeWidth, barcodeHeight] = [barcodeImage.width, barcodeImage.height];
+
+            const bottomY = 50;
+
+            page.drawImage(barcodeImage, {
+                x: 40,
+                y: topY - 30,
+                width: barcodeWidth * 0.5,
+                height: barcodeHeight * 0.5,
+            });
+
+            const mergedPdfBytes = await mergedPdf.save();
+            var blob = new Blob([mergedPdfBytes], {type: "application/pdf"});
+            var url = URL.createObjectURL(blob);
+            
+            // Nombre de archivo personalizado
+            var nombreArchivo = pdf1.name.split('.pdf')[0] + '_FOLIO.pdf';
+            
+            var descargar = document.getElementById("descargar");
+            descargar.href = url;
+            descargar.setAttribute("download", nombreArchivo);
+            descargar.hidden = false;
+            descargar.click();
+        } else {
+            alert("Debes seleccionar dos archivos PDF");
+        }
+    }
+
+    function generateRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    async function unirPDFs() {
+    var pdf3 = document.getElementById("pdf3").files[0];
+    var pdf4 = document.getElementById("pdf4").files[0];
+    
+    if (pdf3 && pdf4) {
+        var pdfData3 = new Uint8Array(await pdf3.arrayBuffer());
+        var pdfData4 = new Uint8Array(await pdf4.arrayBuffer());
+        const pdfDoc3 = await PDFLib.PDFDocument.load(pdfData3);
+        const pdfDoc4 = await PDFLib.PDFDocument.load(pdfData4);
+        const mergedPdf2 = await PDFLib.PDFDocument.create();
+        const pagesPdf3 = await mergedPdf2.copyPages(pdfDoc3, pdfDoc3.getPageIndices());
+        pagesPdf3.forEach((page) => mergedPdf2.addPage(page));
+        const pagesPdf4 = await mergedPdf2.copyPages(pdfDoc4, pdfDoc4.getPageIndices());
+        pagesPdf4.forEach((page) => mergedPdf2.addPage(page));
+
+        const mergedPdfBytes2 = await mergedPdf2.save();
+        var blob2 = new Blob([mergedPdfBytes2], { type: "application/pdf" });
+        var url2 = URL.createObjectURL(blob2);
+
+        var nombreArchivo2 = pdf3.name.split('.pdf')[0] + '_DOBLE.pdf'; // Obtener el nombre del primer archivo PDF
+
+        var descargar2 = document.getElementById("descargar2");
+        descargar2.href = url2;
+        descargar2.setAttribute("download", nombreArchivo2 + ".pdf"); // Usar el nombre del primer archivo
+        descargar2.hidden = false;
+        descargar2.click();
+    } else {
+            alert("Debes seleccionar dos archivos PDF");
+        }
+    }
+</script>
+
+</body>
+</html>
