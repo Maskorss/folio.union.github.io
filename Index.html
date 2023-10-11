@@ -1,12 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Unir y Sellar PDF</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unir PDFs</title>
     <style>
+        #pdfList {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            color: #333;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+        }
+        #pdfListQR {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            color: #333;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+        }
         input[type="file"] {
             display: block;
             margin-bottom: 10px;
-            width: 1500px; /* Ancho ajustado */
+            width: 500px; /* Ancho ajustado */
             height: 90px; /* Altura ajustada */
             border: 2px solid #ccc; /* Añadir borde */
             border-radius: 5px; /* Añadir bordes redondeados */
@@ -31,144 +55,365 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
 <body>
 
-<div id="container">
-    <h2>Unir y Sellar PDFs</h2>
-    <p>Seleccione uno o dos archivos PDF:</p>
-    <input type="file" id="pdf1" accept="application/pdf">
-    <input type="file" id="pdf2" accept="application/pdf">
-    <button onclick="unirYAplicarSello()">Unir y Sellar PDFs</button>
-    <a id="descargar" href="#" download hidden>Descargar PDF</a>
-</div>
+<!-- Primera sección: Merge PDFs con Sello y Código QR -->
+<section>
+    <h2>FOLIOS</h2>
+    <form id="pdfForm">
+        <label for="pdfInput">Seleccionar PDF:</label>
+        <input type="file" id="pdfInput" accept=".pdf" required>
+        <br>
+        <label for="pdfList">Seleccionar otro PDF:</label>
+        <select id="pdfList" required>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/AGUASCALIENTE.PDF">AGUASCALIENTE</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/BAJA%20CALIFORNIA%20SUR.pdf">BAJA CALIFORNIA SUR</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/BAJA%20CALIFORNIA.pdf">BAJA CALIFORNIA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/CAMPECHE.pdf">CAMPECHE</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/CHIAPAS.pdf">CHIAPAS</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/CHIUAHUA.pdf">CHIHUAHUA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/CIUDAD%20DE%20MEXICO.pdf">CIUDAD DE MÉXICO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/COAHUILA.pdf">COAHUILA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/COLIMA.pdf">COLIMA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/DISTRITO%20FEDERAL.pdf">DISTRITO FEDERAL</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/DURANGO.pdf">DURANGO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/EXTRANJERO.pdf">EXTRANJERO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/GUANAJUATO.pdf">GUANAJUATO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/GUERRERO.pdf">GUERRERO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/HIDALGO.pdf">HIDALGO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/JALISCO.pdf">JALISCO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/MEXICO.pdf">MÉXICO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/MICHOACAN.pdf">MICHOACÁN DE OCAMPO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/MORELOS.pdf">MORELOS</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/NAYARIT.pdf">NAYARIT</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/NUEVO%20LEON.pdf">NUEVO LEÓN</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/OAXACA.pdf">OAXACA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/PUEBLA.pdf">PUEBLA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/QUERETARO.pdf">QUERÉTARO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/QUINTANA%20ROO.pdf">QUINTANA ROO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/SAN%20LUIS%20POTOSI.pdf">SAN LUIS POTOSÍ</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/SINALOA.pdf">SINALOA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/SONORA.pdf">SONORA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/TABASCO.pdf">TABASCO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/TAMAULIPAS.pdf">TAMAULIPAS</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/TLAXCALA.pdf">TLAXCALA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/VERACRUZ.pdf">VERACRUZ</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/YUCATAN.pdf">YUCATÁN</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/ZACATECAS.pdf">ZACATECAS</option>
+        </select>
+        <br>
+        <button type="button" id="mergeButton">Unir PDFs</button>
+    </form>
+</section>
 
-<div id="container2">
-    <h2>Unir PDFs</h2>
-    <p>Seleccione dos archivos PDF:</p>
-    <input type="file" id="pdf3" accept="application/pdf">
-    <input type="file" id="pdf4" accept="application/pdf">
-    <button onclick="unirPDFs()">Unir PDFs</button>
-    <a id="descargar2" href="#" download hidden>Descargar PDF</a>
-</div>
+<div style="height: 50px;"></div> <!-- Ajusta la altura según sea necesario -->
 
-<script>
-    async function unirYAplicarSello() {
-        var pdf1 = document.getElementById("pdf1").files[0];
-        var pdf2 = document.getElementById("pdf2").files[0];
-        
-        if (pdf1 && pdf2) {
-            var pdfData1 = new Uint8Array(await pdf1.arrayBuffer());
-            var pdfData2 = new Uint8Array(await pdf2.arrayBuffer());
-            const pdfDoc1 = await PDFLib.PDFDocument.load(pdfData1);
-            const pdfDoc2 = await PDFLib.PDFDocument.load(pdfData2);
-            const mergedPdf = await PDFLib.PDFDocument.create();
-            const pagesPdf1 = await mergedPdf.copyPages(pdfDoc1, pdfDoc1.getPageIndices());
-            pagesPdf1.forEach((page) => mergedPdf.addPage(page));
-            const pagesPdf2 = await mergedPdf.copyPages(pdfDoc2, pdfDoc2.getPageIndices());
-            pagesPdf2.forEach((page) => mergedPdf.addPage(page));
+<!-- Segunda sección: Merge PDFs con Código QR -->
+<section>
+    <h2>UNIONES</h2>
+    <form id="pdfFormQR">
+        <label for="pdfInputQR">Seleccionar PDF:</label>
+        <input type="file" id="pdfInputQR" accept=".pdf" required>
+        <br>
+        <label for="pdfListQR">Seleccionar otro PDF:</label>
+        <select id="pdfListQR" required>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/AGUASCALIENTE.PDF">AGUASCALIENTE</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/BAJA%20CALIFORNIA%20SUR.pdf">BAJA CALIFORNIA SUR</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/BAJA%20CALIFORNIA.pdf">BAJA CALIFORNIA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/CAMPECHE.pdf">CAMPECHE</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/CHIAPAS.pdf">CHIAPAS</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/CHIUAHUA.pdf">CHIHUAHUA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/CIUDAD%20DE%20MEXICO.pdf">CIUDAD DE MÉXICO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/COAHUILA.pdf">COAHUILA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/COLIMA.pdf">COLIMA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/DISTRITO%20FEDERAL.pdf">DISTRITO FEDERAL</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/DURANGO.pdf">DURANGO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/EXTRANJERO.pdf">EXTRANJERO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/GUANAJUATO.pdf">GUANAJUATO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/GUERRERO.pdf">GUERRERO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/HIDALGO.pdf">HIDALGO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/JALISCO.pdf">JALISCO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/MEXICO.pdf">MÉXICO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/MICHOACAN.pdf">MICHOACÁN DE OCAMPO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/MORELOS.pdf">MORELOS</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/NAYARIT.pdf">NAYARIT</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/NUEVO%20LEON.pdf">NUEVO LEÓN</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/OAXACA.pdf">OAXACA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/PUEBLA.pdf">PUEBLA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/QUERETARO.pdf">QUERÉTARO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/QUINTANA%20ROO.pdf">QUINTANA ROO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/SAN%20LUIS%20POTOSI.pdf">SAN LUIS POTOSÍ</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/SINALOA.pdf">SINALOA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/SONORA.pdf">SONORA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/TABASCO.pdf">TABASCO</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/TAMAULIPAS.pdf">TAMAULIPAS</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/TLAXCALA.pdf">TLAXCALA</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/VERACRUZ.pdf">VERACRUZ</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/YUCATAN.pdf">YUCATÁN</option>
+            <option value="https://raw.githubusercontent.com/Maskorss/prueba.github.io/56c9b46fc69d29196c906b3e576512db37279b21/REVERSO/ZACATECAS.pdf">ZACATECAS</option>
+        </select>
+        <br>
+        <button type="button" id="mergeButtonQR">Unir PDFs</button>
+    </form>
+</section>
 
-            // Aquí aplicamos el sello
-            const [page] = mergedPdf.getPages();
-            const randomNumber1 = generateRandomNumber(10, 99);
-            const randomNumber2 = generateRandomNumber(1000000, 9999999);
-            const fixedText = 'FOLIO';
-            const variableText = `A${randomNumber1} ${randomNumber2}`;
-            const font = await mergedPdf.embedFont(PDFLib.StandardFonts.Helvetica);
 
-            const topY = page.getHeight() - 50;
+ <iframe id="previewFrame" style="display: none; width: 750px; height: 1250px; border: 1px solid #ccc; position: absolute; top: 0px; left: 520px;"></iframe>
 
-            page.drawText(fixedText, {
-                x: 85,
-                y: topY,
-                size: 10,
-                font: await mergedPdf.embedFont(PDFLib.StandardFonts.HelveticaBold),
-                color: PDFLib.rgb(0, 0, 0),
-            });
 
-            page.drawText(variableText, {
-                x: 70,
-                y: topY - 10,
-                size: 10,
-                font: await mergedPdf.embedFont(PDFLib.StandardFonts.HelveticaBold),
-                color: PDFLib.rgb(0, 0, 0),
-            });
 
-            const barcodeText = `A${randomNumber1}${randomNumber2}`;
-            const barcodeCanvas = document.createElement('canvas');
-            JsBarcode(barcodeCanvas, barcodeText, {
-                format: 'CODE128',
-                displayValue: false,
-                height: 25,
-                background: 'transparent',
-                lineColor: 'black',
-                dpi: 300,
-            });
 
-            const barcodeImage = await mergedPdf.embedPng(barcodeCanvas.toDataURL('image/png'));
-            const [barcodeWidth, barcodeHeight] = [barcodeImage.width, barcodeImage.height];
+    <script>
+        async function mergePDFs(pdfBytes1, pdfBytes2) {
+            const pdfDoc1 = await PDFLib.PDFDocument.load(pdfBytes1);
+            const pdfDoc2 = await PDFLib.PDFDocument.load(pdfBytes2);
 
-            const bottomY = 50;
+            const [pdf1Page] = await pdfDoc1.copyPages(pdfDoc2, [0]);
+            pdfDoc1.addPage(pdf1Page);
 
-            page.drawImage(barcodeImage, {
-                x: 40,
-                y: topY - 30,
-                width: barcodeWidth * 0.5,
-                height: barcodeHeight * 0.5,
-            });
-
-            const mergedPdfBytes = await mergedPdf.save();
-            var blob = new Blob([mergedPdfBytes], {type: "application/pdf"});
-            var url = URL.createObjectURL(blob);
-            
-            // Nombre de archivo personalizado
-            var nombreArchivo = pdf1.name.split('.pdf')[0] + '_FOLIO.pdf';
-            
-            var descargar = document.getElementById("descargar");
-            descargar.href = url;
-            descargar.setAttribute("download", nombreArchivo);
-            descargar.hidden = false;
-            descargar.click();
-        } else {
-            alert("Debes seleccionar dos archivos PDF");
+            return pdfDoc1;
         }
-    }
 
-    function generateRandomNumber(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+        document.getElementById('mergeButton').addEventListener('click', async () => {
+            const pdfInput = document.getElementById('pdfInput');
+            const pdfList = document.getElementById('pdfList');
+            const resultFrame = document.getElementById('resultFrame');
 
-    async function unirPDFs() {
-    var pdf3 = document.getElementById("pdf3").files[0];
-    var pdf4 = document.getElementById("pdf4").files[0];
+            const selectedPdf = pdfList.value;
+            const uploadedPdf = pdfInput.files[0];
+
+            if (selectedPdf && uploadedPdf) {
+                const uploadedPdfData = new Uint8Array(await uploadedPdf.arrayBuffer());
+
+                const response = await fetch(selectedPdf);
+                const selectedPdfData = new Uint8Array(await response.arrayBuffer());
+
+                const mergedPdf = await mergePDFs(uploadedPdfData, selectedPdfData);
+
+                // Aplicar el sello y obtener los bytes del PDF resultante
+                const [page] = mergedPdf.getPages();
+                const randomNumber1 = generateRandomNumber(10, 99);
+                const randomNumber2 = generateRandomNumber(1000000, 9999999);
+                const fixedText = 'FOLIO';
+                const variableText = `A${randomNumber1} ${randomNumber2}`;
+                const font = await mergedPdf.embedFont(PDFLib.StandardFonts.Helvetica);
+
+                const topY = page.getHeight() - 50;
+
+                page.drawText(fixedText, {
+                    x: 85,
+                    y: topY,
+                    size: 10,
+                    font: await mergedPdf.embedFont(PDFLib.StandardFonts.HelveticaBold),
+                    color: PDFLib.rgb(0, 0, 0),
+                });
+
+                page.drawText(variableText, {
+                    x: 70,
+                    y: topY - 10,
+                    size: 10,
+                    font: await mergedPdf.embedFont(PDFLib.StandardFonts.HelveticaBold),
+                    color: PDFLib.rgb(0, 0, 0),
+                });
+
+                const barcodeText = `A${randomNumber1}${randomNumber2}`;
+                const barcodeCanvas = document.createElement('canvas');
+                JsBarcode(barcodeCanvas, barcodeText, {
+                    format: 'CODE128',
+                    displayValue: false,
+                    height: 25,
+                    background: 'transparent',
+                    lineColor: 'black',
+                    dpi: 300,
+                });
+
+                const barcodeImage = await mergedPdf.embedPng(barcodeCanvas.toDataURL('image/png'));
+                const [barcodeWidth, barcodeHeight] = [barcodeImage.width, barcodeImage.height];
+
+                const bottomY = 50;
+
+                page.drawImage(barcodeImage, {
+                    x: 40,
+                    y: topY - 30,
+                    width: barcodeWidth * 0.5,
+                    height: barcodeHeight * 0.5,
+                });
+
+                // Obtener el nombre del archivo del primer PDF sin la extensión .pdf
+                const uploadedPdfName = uploadedPdf.name.replace('.pdf', '');
+
+                // Agregar un código QR a la segunda página
+                const qrText = uploadedPdfName.substring(0, 18);
+                const qrTextUpperCase = qrText.toUpperCase();
+                const qrCanvas = document.createElement('canvas');
+                new QRious({
+                    element: qrCanvas,
+                    value: qrTextUpperCase,
+                    size: 100,
+                    backgroundAlpha: 0, // Establecer el fondo como transparente
+                });
+
+                const qrImage = await mergedPdf.embedPng(qrCanvas.toDataURL('image/png'));
+
+                const secondPage = mergedPdf.getPages()[1]; // Obtener la segunda página
+                secondPage.drawImage(qrImage, {
+                    x: 30,
+                    y: secondPage.getHeight() - 90,
+                    width: 62,
+                    height: 62,
+                });
+                
+                // Agregar el mismo texto debajo del código QR
+                const textSize = 5; // Tamaño del texto
+                const text = qrText.toUpperCase(); // Usar el mismo texto del código QR
+
+                // Verificar si el texto cumple con el patrón deseado
+                const pattern = /^[A-Z]{4}\d{6}[A-Z]{6}[A-Z0-9]\d$/;
+                if (pattern.test(text)) {
+                    secondPage.drawText(text, {
+                        x: 31,
+                        y: secondPage.getHeight() - 97, // Ajusta la posición vertical según sea necesario
+                        size: textSize,
+                        font: await mergedPdf.embedFont(PDFLib.StandardFonts.Helvetica),
+                        color: PDFLib.rgb(0, 0, 0),
+                    });
+                } else {
+                    console.warn('El texto no cumple con el patrón deseado y no se agregará al PDF.');
+                }    
+
+                const mergedPdfBytes = await mergedPdf.save();
+
+                // Crear enlace para descargar el PDF con nombre personalizado
+                const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+
+                const nombreArchivo = qrText + '_FOLIO.pdf';
+
+                const descargar = document.createElement('a');
+                descargar.href = url;
+                descargar.download = nombreArchivo;
+                descargar.textContent = 'Descargar PDF Unido con Sello y Código QR';
+                descargar.style.display = 'none'; // Ocultar el enlace
+                document.body.appendChild(descargar);
+
+                // Simular el clic en el enlace para iniciar la descarga automáticamente
+                descargar.click();
+
+                // Mostrar la previsualización del archivo descargado en el iframe
+                const previewFrame = document.getElementById('previewFrame');
+                previewFrame.src = url;
+                previewFrame.style.display = 'block';
+
+                // Eliminar el enlace después de la descarga
+                URL.revokeObjectURL(url);
+                document.body.removeChild(descargar);
+            } else {
+                console.error('Seleccione un PDF y suba otro para unir.');
+            }
+        });
+
+        function generateRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    </script>
+    <script>
+        async function mergePDFs(pdfBytes1, pdfBytes2) {
+            const pdfDoc1 = await PDFLib.PDFDocument.load(pdfBytes1);
+            const pdfDoc2 = await PDFLib.PDFDocument.load(pdfBytes2);
     
-    if (pdf3 && pdf4) {
-        var pdfData3 = new Uint8Array(await pdf3.arrayBuffer());
-        var pdfData4 = new Uint8Array(await pdf4.arrayBuffer());
-        const pdfDoc3 = await PDFLib.PDFDocument.load(pdfData3);
-        const pdfDoc4 = await PDFLib.PDFDocument.load(pdfData4);
-        const mergedPdf2 = await PDFLib.PDFDocument.create();
-        const pagesPdf3 = await mergedPdf2.copyPages(pdfDoc3, pdfDoc3.getPageIndices());
-        pagesPdf3.forEach((page) => mergedPdf2.addPage(page));
-        const pagesPdf4 = await mergedPdf2.copyPages(pdfDoc4, pdfDoc4.getPageIndices());
-        pagesPdf4.forEach((page) => mergedPdf2.addPage(page));
-
-        const mergedPdfBytes2 = await mergedPdf2.save();
-        var blob2 = new Blob([mergedPdfBytes2], { type: "application/pdf" });
-        var url2 = URL.createObjectURL(blob2);
-
-        var nombreArchivo2 = pdf3.name.split('.pdf')[0] + '_DOBLE.pdf'; // Obtener el nombre del primer archivo PDF
-
-        var descargar2 = document.getElementById("descargar2");
-        descargar2.href = url2;
-        descargar2.setAttribute("download", nombreArchivo2 + ".pdf"); // Usar el nombre del primer archivo
-        descargar2.hidden = false;
-        descargar2.click();
-    } else {
-            alert("Debes seleccionar dos archivos PDF");
+            const [pdf1Page] = await pdfDoc1.copyPages(pdfDoc2, [0]);
+            pdfDoc1.addPage(pdf1Page);
+    
+            return pdfDoc1;
         }
-    }
-</script>
+    
+        document.getElementById('mergeButtonQR').addEventListener('click', async () => {
+            const pdfInputQR = document.getElementById('pdfInputQR');
+            const pdfListQR = document.getElementById('pdfListQR');
+            const resultFrameQR = document.getElementById('resultFrameQR');
+    
+            const selectedPdfQR = pdfListQR.value;
+            const uploadedPdfQR = pdfInputQR.files[0];
+    
+            if (selectedPdfQR && uploadedPdfQR) {
+                const uploadedPdfDataQR = new Uint8Array(await uploadedPdfQR.arrayBuffer());
+    
+                const responseQR = await fetch(selectedPdfQR);
+                const selectedPdfDataQR = new Uint8Array(await responseQR.arrayBuffer());
+    
+                const mergedPdfQR = await mergePDFs(uploadedPdfDataQR, selectedPdfDataQR);
+    
+                // Agregar un código QR a la segunda página
+                const uploadedPdfQRName = uploadedPdfQR.name.replace('.pdf', '');
+                const qrText = uploadedPdfQRName.toUpperCase().substring(0, 18);
+                const qrCanvas = document.createElement('canvas');
+                new QRious({
+                    element: qrCanvas,
+                    value: qrText,
+                    size: 100,
+                    backgroundAlpha: 0, // Establecer el fondo como transparente
+                });
+    
+                const qrImage = await mergedPdfQR.embedPng(qrCanvas.toDataURL('image/png'));
+    
+                const secondPageQR = mergedPdfQR.getPages()[1]; // Obtener la segunda página
+                secondPageQR.drawImage(qrImage, {
+                    x: 30,
+                    y: secondPageQR.getHeight() - 90,
+                    width: 62,
+                    height: 62,
+                });
+    
+                // Agregar el mismo texto debajo del código QR
+                const textSizeQR = 5; // Tamaño del texto
+                const textQR = qrText.toUpperCase(); // Usar el mismo texto del código QR
 
+                // Verificar si el texto cumple con el patrón deseado
+                const pattern = /^[A-Z]{4}\d{6}[A-Z]{6}[A-Z0-9]\d$/;
+                if (pattern.test(textQR)) {
+                    secondPageQR.drawText(textQR, {
+                        x: 31,
+                        y: secondPageQR.getHeight() - 97, // Ajusta la posición vertical según sea necesario
+                        size: textSizeQR,
+                        font: await mergedPdfQR.embedFont(PDFLib.StandardFonts.Helvetica),
+                        color: PDFLib.rgb(0, 0, 0),
+                    });
+                } else {
+                    console.warn('El texto no cumple con el patrón deseado y no se agregará al PDF.');
+                }    
+
+                const mergedPdfBytesQR = await mergedPdfQR.save();
+    
+                // Crear enlace para descargar el PDF con código QR
+                const blobQR = new Blob([mergedPdfBytesQR], { type: 'application/pdf' });
+                const urlQR = URL.createObjectURL(blobQR);
+    
+                const nombreArchivoQR = qrText + '_DOBLE.pdf';
+    
+                const descargarQR = document.createElement('a');
+                descargarQR.href = urlQR;
+                descargarQR.download = nombreArchivoQR;
+                descargarQR.textContent = 'Descargar PDF con Código QR';
+                descargarQR.style.display = 'none'; // Ocultar el enlace
+                document.body.appendChild(descargarQR);
+
+                // Simular el clic en el enlace para iniciar la descarga automáticamente
+                descargarQR.click();
+
+                // Mostrar la previsualización del archivo descargado en el iframe
+                const previewFrame = document.getElementById('previewFrame');
+                previewFrame.src = urlQR;
+                previewFrame.style.display = 'block';
+
+                // Eliminar el enlace después de la descarga
+                URL.revokeObjectURL(urlQR);
+                document.body.removeChild(descargarQR);
+            } else {
+                console.error('Seleccione un PDF y suba otro para unir.');
+            }
+        });
+    </script>    
 </body>
 </html>
